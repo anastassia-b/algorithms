@@ -1,7 +1,4 @@
 #Anastassia Bobokalonova
-#May 15-18, 2017
-
-#1. Maskify
 
 class Test
   def self.assert_equals(actual, expected)
@@ -12,12 +9,12 @@ class Test
     end
   end
 end
-
+#Or:
 def testing(actual, expected)
     Test.assert_equals(actual, expected)
 end
 
-
+#1. Maskify
 def maskify(cc)
   if cc.length <= 4
     cc
@@ -49,7 +46,7 @@ end
 end
 
 #* splat operator turns a range into an array without the enclosing [].
-
+# Practicing * operator:
 gene = ""
 [*0..30].sample.times do
   gene << ["A", "C", "T", "G"].sample
@@ -63,7 +60,7 @@ def sum_two_smallest_num(numbers)
   sorted[0] + sorted[1]
 end
 
-#other
+#other solutions
 # numbers.min(2).reduce(:+)
 # numbers.sort[0..1].reduce(:+)
 
@@ -86,7 +83,6 @@ def binary_array_to_number(arr)
 end
 
 #other good solutions, join as a string, then to_i(2) base converts!
-
 #arr.join("").to_i(2)
 
 #5.
@@ -151,10 +147,7 @@ end
 # strarr.each_cons(k).map(&:join).max_by(&:length) || ""
 
 testing(longest_consec(["zone", "abigail", "theta", "form", "libe", "zas"], 2), "abigailtheta")
-testing(longest_consec(["ejjjjmmtthh", "zxxuueeg", "aanlljrrrxx", "dqqqaaabbb", "oocccffuucccjjjkkkjyyyeehh"], 1), "oocccffuucccjjjkkkjyyyeehh")
 testing(longest_consec([], 3), "")
-testing(longest_consec(["itvayloxrp","wkppqsztdkmvcuwvereiupccauycnjutlv","vweqilsfytihvrzlaodfixoyxvyuyvgpck"], 2), "wkppqsztdkmvcuwvereiupccauycnjutlvvweqilsfytihvrzlaodfixoyxvyuyvgpck")
-testing(longest_consec(["wlwsasphmxx","owiaxujylentrklctozmymu","wpgozvxxiu"], 2), "wlwsasphmxxowiaxujylentrklctozmymu")
 testing(longest_consec(["zone", "abigail", "theta", "form", "libe", "zas"], -2), "")
 testing(longest_consec(["it","wkppv","ixoyx", "3452", "zzzzzzzzzzzz"], 3), "ixoyx3452zzzzzzzzzzzz")
 testing(longest_consec(["it","wkppv","ixoyx", "3452", "zzzzzzzzzzzz"], 15), "")
@@ -183,3 +176,132 @@ end
 
 testing((delete_nth([1,1,1,1], 2)), [1,1])
 testing((delete_nth([20,37,20,21], 1)), [20,37,21])
+
+#12.
+# def solution(number)
+#   multiples = []
+#   (1...number).each do |num|
+#     multiples << num if num % 3 == 0 || num % 5 == 0
+#   end
+#   multiples.reduce(:+)
+# end
+
+#=> better way:
+def solution(number)
+  (1...number).select {|i| i%3==0 || i%5==0}.inject(:+)
+end
+
+#13.
+# Write a function called validParentheses that takes a string of parentheses,
+# and determines if the order of the parentheses is valid. validParentheses
+# should return true if the string is valid, and false if it's invalid.
+def valid_parentheses(string)
+  left, right = 0, 0
+  string.chars.each do |el|
+    left += 1 if el == "("
+    right += 1 if el == ")"
+    break false if (left - right) < 0
+  end
+  return false if (left - right) != 0
+  true
+end
+
+# def valid_parentheses(string)
+#   open = 0
+#   string.chars.each do |c|
+#     open += 1 if c == "("
+#     open -= 1 if c == ")"
+#     return false if open < 0
+#   end
+#   open == 0
+# end
+
+# def valid_parentheses(string)
+#   ~ Regexp.new(string) == nil rescue false
+# end
+
+# def valid_parentheses(string)
+#  str = string.delete("^()")
+#  while str.gsub!("()",''); end
+#  str == ''
+# end
+
+
+Test.assert_equals(valid_parentheses("  ("),false)
+Test.assert_equals(valid_parentheses(")test"),false)
+Test.assert_equals(valid_parentheses(""),true)
+Test.assert_equals(valid_parentheses("hi())("),false)
+Test.assert_equals(valid_parentheses("hi(hi)()"),true)
+
+#14. Calculating with functions
+class Object
+  %w[zero one two three four five six seven eight nine].each_with_index do |name, n|
+    define_method(name) do |args = nil|
+      args ? n.send(*args) : n.to_f
+    end
+  end
+
+  %w[plus + minus - times * divided_by /].each_slice(2) do |name, symbol|
+    define_method(name) do |n|
+      [symbol, n]
+    end
+  end
+end
+
+Test.assert_equals seven(times(five)), 35
+Test.assert_equals four(plus(nine)), 13
+Test.assert_equals eight(minus(three)), 5
+Test.assert_equals six(divided_by(two)), 3
+
+#15. Create Phone NUmber
+def createPhoneNumber(numbers)
+  "(#{numbers[0..2].join}) #{numbers[3..5].join}-#{numbers[6..9].join}"
+end
+Test.assert_equals(createPhoneNumber([1, 2, 3, 4, 5, 6, 7, 8, 9, 0]), "(123) 456-7890");
+
+#16. Is a number prime?
+def isPrime(num)
+  return false if num < 2
+  (2...num).each {|n| return false if num % n == 0}
+  true
+end
+
+Test.assert_equals(isPrime(2), true)
+Test.assert_equals(isPrime(4), false)
+Test.assert_equals(isPrime(11), true)
+
+#17. WeIrD StRiNg CaSe
+# Write a function toWeirdCase (weirdcase in Ruby) that accepts a string,
+# and returns the same string with all even indexed characters in each word
+# upper cased, and all odd indexed characters in each word lower cased.
+# The indexing just explained is zero based, so the zero-ith index is even,
+# therefore that character should be upper cased.
+
+def weirdcase string
+  words = string.split
+  words.map! do |word|
+    new_word = ""
+    word.chars.each_with_index do |ch, i|
+      new_word << ch.upcase if i.even?
+      new_word << ch.downcase if i.odd?
+    end
+    new_word
+  end
+  words.join(" ")
+end
+
+Test.assert_equals(weirdcase('This is a test'), 'ThIs Is A TeSt');
+
+# Slightly shorter:
+# def weirdcase(string)
+#   string.split(' ').map do |word|
+#     word.split('').each_with_index.map do |char, i|
+#       i % 2 == 0 ? char.upcase : char.downcase
+#     end.join('')
+#   end.join(' ')
+# end
+
+# Using Regex:
+# def weirdcase string
+#   string.gsub(/(\w{1,2})/) { |s| $1.capitalize }
+# end

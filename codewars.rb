@@ -305,3 +305,91 @@ Test.assert_equals(weirdcase('This is a test'), 'ThIs Is A TeSt');
 # def weirdcase string
 #   string.gsub(/(\w{1,2})/) { |s| $1.capitalize }
 # end
+
+#18. First non-repeating letter
+# Write a function named firstNonRepeatingCharacter that takes a string input,
+# and returns the first character that is not repeated anywhere in the string.
+#
+# For example, if given the input 'stress', the function should return 't',
+# since the letter t only occurs once in the string, and occurs first in the string.
+#
+# As an added challenge, upper- and lowercase letters are considered the same
+# character, but the function should return the correct case for the initial
+# letter. For example, the input 'sTreSS' should return 'T'.
+#
+# If a string contains all repeating characters, it should return the empty
+# string ("").
+def  first_non_repeating_letter(s)
+  str = s.downcase
+  i = str.chars.each_with_index {|ch, i| break i if str.count(ch) == 1}
+  i.is_a?(Fixnum) ? s[i] : ""
+end
+
+#.find finds the FIRST occurence, so perfect to use here:
+# def  first_non_repeating_letter(s)
+#   s.chars.find {|i| s.downcase.count(i)==1 || s.upcase.count(i)==1} || ""
+# end
+
+#19. Largest 5 digit number in a series
+# Complete the solution so that it returns the largest five digit number found
+# within the number given.. The number will be passed in as a string of only
+# digits. It should return a five digit integer. The number passed may be as
+# large as 1000 digits.
+def largest_five_digits(digits)
+  digits.chars.each_cons(5).map {|a| a.join('').to_i}.max
+end
+
+Test.assert_equals(largest_five_digits("1234567890"), 67890);
+
+#clever solutionw regex:
+# def solution(digits)
+#   digits.scan(/\d{5}/).max.to_i
+# end
+
+#20. Longest Common Subsequence
+# Write a function called LCS that accepts two sequences, and returns the
+# longest subsequence common to the passed in sequences.
+# Subsequence
+# A subsequence is different from a substring. The terms of a subsequence
+# need not be consecutive terms of the original sequence.
+# https://en.wikipedia.org/wiki/Longest_common_subsequence_problem
+
+#My solution:
+def lcs(x, y)
+  if x.length == 1
+    return x if y.include?(x)
+    return ""
+  elsif y.length == 1
+    return y if x.include?(y)
+    return ""
+  end
+
+  subseq = []
+  if x[-1] == y[-1]
+    subseq.unshift(x[-1])
+    subseq.unshift(lcs(x[0...-1], y[0...-1]))
+  else
+    a, b = lcs(x[0...-1], y), lcs(x, y[0...-1])
+    if a.length > b.length
+      subseq.unshift(a)
+    else
+      subseq.unshift(b)
+    end
+  end
+  subseq.join
+end
+
+#More condense, other solution:
+# def lcs(x, y)
+#   return "" if x.empty? || y.empty?
+#   return x[0] + lcs(x[1..-1], y[1..-1]) if x[0] == y[0]
+#
+#   return [lcs(x[1..-1], y), lcs(x, y[1..-1])].max_by(&:length)
+# end
+
+Test.assert_equals(lcs("a", "b"), "")
+Test.assert_equals(lcs("abcdef", "abc"), "abc")
+Test.assert_equals(lcs("abc", "abc"), "abc")
+Test.assert_equals(lcs( "abcdef" , "acf" ), "acf")
+Test.assert_equals(lcs( "132535365" , "123456789" ), "12356")
+Test.assert_equals(lcs("anothertest", "notatest"), "nottest")

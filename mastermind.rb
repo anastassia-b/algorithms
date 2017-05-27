@@ -1,78 +1,91 @@
-#Anastassia's Version of Mastermind
+#Anastassia Bobokalonova
+#Restart Mastermind, V2
+#May 27, 2017
 
 class Code
   attr_reader :pegs
+
+  PEGS = {R:"Red", Y:"Yellow", O:"Orange", G:"Green", B:"Blue", P:"Purple"}
+
+  def self.parse(other_str)
+    other_pegs = other_str.upcase.chars.map(&:to_sym)
+    other_pegs.each {|color| raise "Invalid Colors!" unless PEGS[color]}
+    Code.new(other_pegs)
+  end
+
+  def self.random
+    random_pegs = PEGS.keys.sample(4)
+    Code.new(random_pegs)
+  end
 
   def initialize(pegs)
     @pegs = pegs
   end
 
-  def self.random
-    colors = ["R", "G", "B", "Y", "O", "P"]
-    Code.new(colors.sample(4).join)
-  end
-
-  def self.parse(input)
-    Code.new(input.upcase)
-  end
-
-  def [](idx)
-    @pegs[idx]
+  def [](pos)
+    @pegs[pos]
   end
 
   def exact_matches(other_code)
     count = 0
-    (0...4).each do |i|
-      count += 1 if @pegs[i] == other_code[i]
+    other_code.pegs.each_with_index do |color, i|
+      count += 1 if color == @pegs[i]
     end
     count
   end
 
   def near_matches(other_code)
-    count_overlap = 0
-    @pegs.split.uniq.each do |peg|
-      count_overlap += [@pegs.count(peg), other_code.pegs.count(peg)].min
+    count = 0
+    other_code.pegs.uniq.each do |color|
+      count += [@pegs.count(color), other_code.pegs.count(color)].min
     end
+    count - exact_matches(other_code)
+  end
 
-    count_overlap - self.exact_matches(other_code)
+  def ==(other_code)
+    return false unless other_code.class == Code
+    @pegs == other_code.pegs
   end
 end
 
 class Game
   attr_reader :secret_code
 
-  def initialize(secret_code=Code.random)
-    @secret_code = secret_code
-    @num_turns = 0
-    @user_code = Code.new("----")
-  end
-
-  def play
-    until game_over?
-      get_guess
-      display_matches
-      @num_turns += 1
-    end
-    p "num_turns: #{@num_turns}"
-  end
-
-  def game_over?
-    @secret_code.pegs == @user_code.pegs
+  def initialize(code = Code.random)
+    @secret_code = code
   end
 
   def get_guess
-    p "Enter 4-color guess (RGBYOP):"
-    user_guess = gets.chomp
-    @user_code = Code.new(user_guess)
-    p "user_code.pegs: ", @user_code.pegs
-    p "secret_code.pegs: ", @secret_code.pegs
+    puts "\n.~*~* Please enter a 4-color guess *~*~."
+    guess = gets.chomp
+    Code.parse(guess)
   end
 
-  def display_matches
-    p "exact matches: #{@secret_code.exact_matches(@user_code)}"
-    p "near matches: #{@secret_code.near_matches(@user_code)}"
+  def display_matches(other_code)
+    puts "\n--> Exact matches: #{@secret_code.exact_matches(other_code)}"
+    puts "--> Near matches: #{@secret_code.near_matches(other_code)}"
   end
+
+  def play
+    puts '-' * 24
+    puts " Welcome to Mastermind!"
+    puts "  Colors: R Y O B P G"
+    puts '-' * 24
+
+    turns = 5
+    until turns == 0
+      puts "Turns remaining: #{turns}"
+      guess_code = get_guess
+      display_matches(guess_code)
+      break if @secret_code == guess_code
+      turns -= 1
+    end
+
+    turns == 0 ? (puts "\nYou're out of turns!") : (puts "Congrats, you win!!!")
+  end
+
 end
+
 
 if __FILE__ == $PROGRAM_NAME
   game = Game.new

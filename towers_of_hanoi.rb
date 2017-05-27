@@ -1,11 +1,12 @@
 #Anastassia Bobokalonova
-#Current Version: Terminal Towers of Hanoi with 3 disks
+#Current Version: Terminal Towers of Hanoi with any number of disks
 
 class TowersOfHanoi
-  attr_reader :towers
+  attr_reader :towers, :num_disks
 
-  def initialize
-    @towers = [[3, 2, 1], [], []]
+  def initialize(num_disks)
+    @num_disks = num_disks
+    @towers = [(1..num_disks).to_a.reverse, [], []]
   end
 
   def play
@@ -22,9 +23,9 @@ class TowersOfHanoi
   end
 
   def get_move
-    print "Which tower (1, 2, 3) do you want to select from? "
+    print "Which tower do you want to select from? "
     from_tower = gets.chomp.to_i - 1
-    print "Which tower (1, 2, 3) do you want to move to? "
+    print "Which tower do you want to move to? "
     to_tower = gets.chomp.to_i - 1
 
     until valid_move?(from_tower, to_tower)
@@ -36,10 +37,12 @@ class TowersOfHanoi
   end
 
   def render
-    top_row = towers.map {|tower| tower.length >= 3 ? tower[2] : ' '}
-    mid_row = towers.map {|tower| tower.length >= 2 ? tower[1] : ' '}
-    bot_row = towers.map {|tower| tower.length >= 1 ? tower[0] : ' '}
-    "#{top_row.join(' ')}\n#{mid_row.join(' ')}\n#{bot_row.join(' ')}\n-----"
+    rows = []
+    (1..num_disks).to_a.reverse.each do |i|
+      rows << towers.map {|tower| tower.length >= i ? tower[i - 1] : ' '}.join(' ')
+    end
+    puts rows
+    puts "-----"
   end
 
   def valid_move?(from_tower, to_tower)
@@ -51,7 +54,7 @@ class TowersOfHanoi
   end
 
   def won?
-    return true if (towers[1].length == 3 || towers[2].length == 3)
+    return true if (towers[1].length == num_disks || towers[2].length == num_disks)
     false
   end
 
@@ -63,6 +66,13 @@ class TowersOfHanoi
 end
 
 if __FILE__ == $PROGRAM_NAME
-  t = TowersOfHanoi.new
+  puts "-----------------------------------"
+  puts "   Welcome to Towers of Hanoi!"
+  puts "-----------------------------------"
+  print "How many disks tall is the tower? "
+  num_disks = gets.chomp.to_i
+  puts "-----------------------------------\n\n"
+
+  t = TowersOfHanoi.new(num_disks)
   t.play
 end

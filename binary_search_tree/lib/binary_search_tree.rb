@@ -44,8 +44,14 @@ class BinarySearchTree
     @root = delete_from_tree(@root, value)
   end
 
-  def maximum
-
+  def maximum(tree_node = @root)
+    #just keep going to the right
+    if tree_node.right
+      maximum = maximum(tree_node.right)
+    else
+      maximum = tree_node
+    end
+    maximum_node
   end
 
   def depth
@@ -72,5 +78,20 @@ class BinarySearchTree
       tree_node.right = delete_from_tree(tree_node.right, value)
     end
     tree_node
+  end
+
+  def remove(node)
+    if node.left.nil? && node.right.nil?
+      node = nil
+#if node only has one child, left or right side.
+    elsif node.left && node.right.nil?
+      node = node.left
+    elsif node.left.nil? && node.right
+      node = node.right
+    else
+#if two children
+
+    end
+    node
   end
 end

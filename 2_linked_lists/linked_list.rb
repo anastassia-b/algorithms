@@ -56,11 +56,13 @@ class LinkedList
     end
     puts "\n"
   end
-end
 
-head = Node.new(1)
-list = LinkedList.new(head)
-list.append_to_tail(2)
-list.append_to_tail(3)
-list.append_to_tail(4)
-puts list
+  def self.build_list(node_data)
+    head = Node.new(node_data.shift)
+    list = LinkedList.new(head)
+    node_data.each do |data|
+      list.append_to_tail(data)
+    end
+    list
+  end
+end

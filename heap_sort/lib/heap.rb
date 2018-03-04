@@ -12,18 +12,15 @@ class BinaryMinHeap
   end
 
   def extract
-    # take min element : @store.shift
-    # resort.
-    value = @store[0]
-    p @store
-    opposite = BinaryMinHeap.heapify_down(@store, 0)
-    p opposite
-    @store = BinaryMinHeap.heapify_up(opposite, (opposite.length - 1))
+    value = @store.shift
+    last_el = @store.pop
+    @store.unshift(last_el)
+    BinaryMinHeap.heapify_down(@store, 0)
     value
   end
 
   def peek
-
+    @store[0]
   end
 
   def push(val)

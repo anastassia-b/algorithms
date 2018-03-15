@@ -1,5 +1,6 @@
 require 'rspec'
 require '01_undirected_graph'
+require '00_directed_graph'
 
 describe UndirectedVertex do
   describe '#initialize' do
